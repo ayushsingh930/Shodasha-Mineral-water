@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "410454933678",
+    "project_id": "shodasha-mineral-water",
+    "storage_bucket": "shodasha-mineral-water.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410454933678:android:8d2b13ad277da950eaad3f",
+        "android_client_info": {
+          "package_name": "com.example.shodasha"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-ox02sktuKz3ytFq06lB99J5q68h82Q4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
