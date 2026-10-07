@@ -3,8 +3,31 @@ import '../../../core/constants/app_constants.dart';
 import 'support_help_screen.dart';
 import 'saved_addresses_screen.dart';
 
-class CustomerProfileScreen extends StatelessWidget {
+class CustomerProfileScreen extends StatefulWidget {
   const CustomerProfileScreen({super.key});
+
+  @override
+  State<CustomerProfileScreen> createState() => _CustomerProfileScreenState();
+}
+
+class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
+  final AddressStateService _addressService = AddressStateService.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _addressService.addListener(_onAddressUpdate);
+  }
+
+  void _onAddressUpdate() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _addressService.removeListener(_onAddressUpdate);
+    super.dispose();
+  }
 
   Widget _buildSectionHeader(String title) {
     return Padding(
@@ -54,6 +77,8 @@ class CustomerProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final activeAddr = _addressService.activeAddress;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -166,7 +191,7 @@ class CustomerProfileScreen extends StatelessWidget {
             _buildTile(
               icon: Icons.location_on_outlined,
               title: 'Primary Delivery Location',
-              subtitle: 'Flat 402, Arera Colony, Bhopal',
+              subtitle: '${activeAddr.tag}: ${activeAddr.title}',
               onTap: () {
                 Navigator.push(
                   context,
