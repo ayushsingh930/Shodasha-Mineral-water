@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
+import 'support_help_screen.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
   const CustomerProfileScreen({super.key});
@@ -239,8 +240,9 @@ class CustomerProfileScreen extends StatelessWidget {
               subtitle: 'Instant WhatsApp & Call Support',
               iconColor: const Color(0xFF16A34A),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Support line: +91 755-SHODASHA (Bhopal Hub)')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SupportHelpScreen()),
                 );
               },
             ),
