@@ -1,4 +1,6 @@
-﻿import 'package:flutter/material.dart';
+﻿import '../../../orders/presentation/cart_checkout_sheet.dart';
+import '../notifications_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -497,20 +499,51 @@ class _TopBarState extends State<TopBar> {
               ),
               Row(
                 children: [
-                  Container(height: 36, width: 36, decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle), child: const Icon(Icons.person, color: Colors.white, size: 20)),
-                  const SizedBox(width: 8),
                   Container(
-                    height: 36,
-                    width: 36,
-                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 20),
-                        Positioned(right: 4, top: 4, child: Container(padding: const EdgeInsets.all(2), decoration: const BoxDecoration(color: AppColors.accent, shape: BoxShape.circle), constraints: const BoxConstraints(minWidth: 14, minHeight: 14), child: const Text('1', style: TextStyle(color: AppColors.textOnAccent, fontSize: 9, fontWeight: FontWeight.bold), textAlign: TextAlign.center))),
-                      ],
-                    ),
-                  ),
+  height: 36,
+  width: 36,
+  decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+  child: IconButton(
+    padding: EdgeInsets.zero,
+    icon: const Icon(Icons.notifications_outlined, color: Colors.white, size: 20),
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+      );
+    },
+  ),
+),
+const SizedBox(width: 8),
+Container(height: 36, width: 36, decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle), child: const Icon(Icons.person, color: Colors.white, size: 20)),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+  onTap: () {
+    CartCheckoutSheet.show(
+      context,
+      onOrderSuccess: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Color(0xFF15803D),
+            content: Text('Cart order confirmed! Track in My Orders tab.'),
+          ),
+        );
+      },
+    );
+  },
+  child: Container(
+    height: 36,
+    width: 36,
+    decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 20),
+        Positioned(right: 4, top: 4, child: Container(padding: const EdgeInsets.all(2), decoration: const BoxDecoration(color: AppColors.accent, shape: BoxShape.circle), constraints: const BoxConstraints(minWidth: 14, minHeight: 14), child: const Text('2', style: TextStyle(color: AppColors.textOnAccent, fontSize: 9, fontWeight: FontWeight.bold), textAlign: TextAlign.center))),
+      ],
+    ),
+  ),
+),
                 ],
               ),
             ],
