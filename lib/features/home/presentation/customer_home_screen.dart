@@ -16,6 +16,7 @@ class CustomerHomeScreen extends StatefulWidget {
 }
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
+  DateTime? _lastBackPressTime;
   int _currentTabIndex = 0;
 
   void _onTabTapped(int index) {

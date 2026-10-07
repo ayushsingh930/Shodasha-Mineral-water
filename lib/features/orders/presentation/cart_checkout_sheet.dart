@@ -1,20 +1,18 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../profile/presentation/saved_addresses_screen.dart';
 import '../data/order_service.dart';
 
 class CartCheckoutSheet extends StatefulWidget {
-  final VoidCallback onOrderSuccess;
+  final VoidCallback? onOrderSuccess;
 
-  const CartCheckoutSheet({super.key, required this.onOrderSuccess});
+  const CartCheckoutSheet({super.key, this.onOrderSuccess});
 
-  static void show(BuildContext context, {required VoidCallback onOrderSuccess}) {
+  static void show(BuildContext context, {VoidCallback? onOrderSuccess}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (_) => CartCheckoutSheet(onOrderSuccess: onOrderSuccess),
     );
   }
@@ -24,239 +22,256 @@ class CartCheckoutSheet extends StatefulWidget {
 }
 
 class _CartCheckoutSheetState extends State<CartCheckoutSheet> {
-  int _canQty = 2;
-  int _pumpQty = 0;
-  final double _canPrice = 65.0;
-  final double _pumpPrice = 249.0;
-  final double _depositPerCan = 150.0;
-  bool _isNewCansNeeded = false;
-
-  double get _itemsTotal => (_canQty * _canPrice) + (_pumpQty * _pumpPrice);
-  double get _depositTotal => _isNewCansNeeded ? (_canQty * _depositPerCan) : 0.0;
-  double get _finalPayable => _itemsTotal + _depositTotal;
+  int _canCount = 2;
+  final AddressStateService _addressService = AddressStateService.instance;
+  final int _pricePerCan = 65;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: const [
-                    Icon(Icons.shopping_bag_outlined, color: AppColors.primary, size: 24),
-                    SizedBox(width: 8),
-                    Text(
-                      'Your Water Cart',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close_rounded),
-                ),
-              ],
-            ),
-            const Divider(height: 16),
+    final activeAddress = _addressService.activeAddress;
+    final totalAmount = _canCount * _pricePerCan;
 
-            // Item 1: 20L Water Can
-            _buildCartItem(
-              title: '20L Chilled Mineral Water Can',
-              unitPrice: 'Rs 65.00',
-              quantity: _canQty,
-              onMinus: () => setState(() { if (_canQty > 1) _canQty--; }),
-              onPlus: () => setState(() => _canQty++),
-            ),
-            const SizedBox(height: 10),
-
-            // Item 2: Pump Dispenser
-            _buildCartItem(
-              title: 'Manual Water Dispenser Pump',
-              unitPrice: 'Rs 249.00',
-              quantity: _pumpQty,
-              onMinus: () => setState(() { if (_pumpQty > 0) _pumpQty--; }),
-              onPlus: () => setState(() => _pumpQty++),
-            ),
-            const SizedBox(height: 14),
-
-            // Can Exchange Toggle
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: !_isNewCansNeeded,
-                    activeColor: AppColors.primary,
-                    onChanged: (val) {
-                      setState(() {
-                        _isNewCansNeeded = !(val ?? true);
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'I will return empty cans on delivery',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          'No bottle security deposit charged if returning cans',
-                          style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Bill Breakdown
-            const Text(
-              'PAYMENT BREAKDOWN',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textSecondary, letterSpacing: 0.8),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Column(
-                children: [
-                  _buildPriceRow('Items Subtotal', 'Rs ${_itemsTotal.toStringAsFixed(2)}'),
-                  const SizedBox(height: 6),
-                  if (_isNewCansNeeded) ...[
-                    _buildPriceRow('New Bottle Deposit (Refundable)', 'Rs ${_depositTotal.toStringAsFixed(2)}'),
-                    const SizedBox(height: 6),
-                  ],
-                  _buildPriceRow('Express Hub Delivery', 'FREE', isGreen: true),
-                  const Divider(height: 18),
-                  _buildPriceRow('Final Total Payable', 'Rs ${_finalPayable.toStringAsFixed(2)}', isBold: true),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Checkout Button
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: () {
-                  final String orderTitle = '$_canQty x 20L Water Can' + (_pumpQty > 0 ? ' + $_pumpQty Dispenser' : '');
-                  OrderStateNotifier.instance.placeNewOrder(
-                    itemName: orderTitle,
-                    address: 'Flat 402, Arera Colony, Bhopal',
-                    slot: 'Morning (8:00 AM - 3:00 PM)',
-                    price: 'Rs ${_finalPayable.toStringAsFixed(2)}',
-                    cansCount: _canQty,
-                  );
-
-                  Navigator.pop(context);
-                  widget.onOrderSuccess();
-                },
-                child: const Text('PROCEED TO PLACE ORDER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCartItem({
-    required String title,
-    required String unitPrice,
-    required int quantity,
-    required VoidCallback onMinus,
-    required VoidCallback onPlus,
-  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12.5)),
-                Text(unitPrice, style: const TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.w600)),
-              ],
+          Center(
+            child: Container(
+              width: 44,
+              height: 5,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
+          const SizedBox(height: 16),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                visualDensity: VisualDensity.compact,
-                onPressed: quantity > 0 ? onMinus : null,
-                icon: const Icon(Icons.remove_circle_outline, size: 20, color: AppColors.primary),
+              Row(
+                children: const [
+                  Text('💧', style: TextStyle(fontSize: 22)),
+                  SizedBox(width: 8),
+                  Text(
+                    'Order Water Can',
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+                  ),
+                ],
               ),
-              Text('$quantity', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               IconButton(
                 visualDensity: VisualDensity.compact,
-                onPressed: onPlus,
-                icon: const Icon(Icons.add_circle_outline, size: 20, color: AppColors.primary),
+                icon: const Icon(Icons.close_rounded, color: Colors.grey),
+                onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
+          const SizedBox(height: 14),
+          const Text(
+            'DELIVERY TO:',
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.textSecondary, letterSpacing: 0.8),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0FDF4),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFBBF7D0), width: 1.5),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  height: 40,
+                  width: 40,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF16A34A),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.home_rounded, color: Colors.white, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${activeAddress.tag}: ${activeAddress.title}',
+                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13.5),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '${activeAddress.landmark} • ${activeAddress.floor}',
+                        style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.check_circle_rounded, color: Color(0xFF16A34A), size: 20),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  height: 48,
+                  width: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Text('🧊', style: TextStyle(fontSize: 24)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '20L Chilled Water Can',
+                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+                      ),
+                      Text(
+                        'Rs $_pricePerCan per can',
+                        style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        icon: const Icon(Icons.remove_rounded, color: AppColors.textPrimary, size: 20),
+                        onPressed: () {
+                          if (_canCount > 1) {
+                            setState(() => _canCount--);
+                          }
+                        },
+                      ),
+                      Text(
+                        '$_canCount',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.primary),
+                      ),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        icon: const Icon(Icons.add_rounded, color: AppColors.textPrimary, size: 20),
+                        onPressed: () {
+                          if (_canCount < 10) {
+                            setState(() => _canCount++);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Total Amount to Pay:',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+              ),
+              Text(
+                'Rs $totalAmount.00',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF15803D)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF16A34A),
+                foregroundColor: Colors.white,
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              onPressed: () {
+                final newOrder = OrderItem(
+                  orderId: '#SHD-${(1000 + DateTime.now().millisecond * 7).toString()}',
+                  title: '$_canCount x 20L Chilled Mineral Water Cans',
+                  status: 'DISPATCHED',
+                  address: activeAddress.title,
+                  timeSlot: 'Instant Van Delivery',
+                  amount: 'Rs $totalAmount.00',
+                  deliveryAgent: 'Mahesh (Plant Van)',
+                  emptyCansToReturn: _canCount,
+                  eta: '~20 mins',
+                  date: 'Today',
+                );
+
+                final notifier = OrderStateNotifier.instance;
+                notifier.activeOrders.insert(0, newOrder);
+                // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
+                notifier.notifyListeners();
+
+                if (widget.onOrderSuccess != null) {
+                  widget.onOrderSuccess!();
+                }
+
+                Navigator.pop(context);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: const Color(0xFF15803D),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    content: Row(
+                      children: const [
+                        Icon(Icons.check_circle, color: Colors.white),
+                        SizedBox(width: 10),
+                        Text('Order Confirmed! Van is on the way 🚚', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.shopping_bag_outlined, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'PLACE ORDER NOW',
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 0.5),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _buildPriceRow(String label, String value, {bool isBold = false, bool isGreen = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isBold ? 13 : 12,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-            color: isBold ? AppColors.textPrimary : AppColors.textSecondary,
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: isBold ? 14 : 12,
-            fontWeight: isBold ? FontWeight.w900 : FontWeight.bold,
-            color: isGreen ? const Color(0xFF16A34A) : (isBold ? AppColors.primary : AppColors.textPrimary),
-          ),
-        ),
-      ],
     );
   }
 }
