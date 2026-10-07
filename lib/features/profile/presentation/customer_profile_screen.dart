@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
 import 'support_help_screen.dart';
+import 'saved_addresses_screen.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
   const CustomerProfileScreen({super.key});
@@ -73,7 +74,6 @@ class CustomerProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // User Header Card
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -137,19 +137,9 @@ class CustomerProfileScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.edit_outlined, color: AppColors.textSecondary, size: 20),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Edit profile dialog coming up!')),
-                      );
-                    },
-                  ),
                 ],
               ),
             ),
-
-            // Quick Stats Banner
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -172,14 +162,17 @@ class CustomerProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-
-            // 1. Delivery & Schedule Section
             _buildSectionHeader('DELIVERY & LOCATIONS'),
             _buildTile(
               icon: Icons.location_on_outlined,
               title: 'Primary Delivery Location',
               subtitle: 'Flat 402, Arera Colony, Bhopal',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SavedAddressesScreen()),
+                );
+              },
             ),
             _buildTile(
               icon: Icons.access_time_rounded,
@@ -187,8 +180,6 @@ class CustomerProfileScreen extends StatelessWidget {
               subtitle: 'Morning (8:00 AM - 3:00 PM)',
               onTap: () {},
             ),
-
-            // 2. Billing & Security
             _buildSectionHeader('PAYMENTS & LEDGER'),
             _buildTile(
               icon: Icons.account_balance_wallet_outlined,
@@ -200,14 +191,6 @@ class CustomerProfileScreen extends StatelessWidget {
               ),
               onTap: () {},
             ),
-            _buildTile(
-              icon: Icons.receipt_long_outlined,
-              title: 'Billing Invoices & Receipts',
-              subtitle: 'Download monthly water statements',
-              onTap: () {},
-            ),
-
-            // 3. Plant & Quality Trust
             _buildSectionHeader('QUALITY & PURITY GUARANTEE'),
             _buildTile(
               icon: Icons.verified_outlined,
@@ -224,15 +207,11 @@ class CustomerProfileScreen extends StatelessWidget {
                       '• Plant: Govindpura Industrial Hub\n• Multi-Stage RO + UV + Ozonation\n• Packed in BPA-free Food Grade Cans\n• Batch Lab Tested Daily',
                       style: TextStyle(fontSize: 13, height: 1.5),
                     ),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK')),
-                    ],
+                    actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))],
                   ),
                 );
               },
             ),
-
-            // 4. Help & Support
             _buildSectionHeader('HELP & ASSISTANCE'),
             _buildTile(
               icon: Icons.support_agent_rounded,
@@ -246,22 +225,10 @@ class CustomerProfileScreen extends StatelessWidget {
                 );
               },
             ),
-            _buildTile(
-              icon: Icons.logout_rounded,
-              title: 'Log Out',
-              subtitle: 'Sign out from this device',
-              iconColor: Colors.redAccent,
-              trailing: const SizedBox.shrink(),
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('User logout triggered')),
-                );
-              },
-            ),
             const SizedBox(height: 20),
             Center(
               child: Text(
-                'Shodasha Mineral Water v1.0.4 • Build 2026',
+                'Shodasha Mineral Water v1.0.4 • Bhopal Plant Hub',
                 style: TextStyle(color: AppColors.textSecondary.withOpacity(0.6), fontSize: 11),
               ),
             ),
