@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../../core/constants/app_constants.dart';
 
 class SubscriptionScreen extends StatefulWidget {
@@ -10,51 +9,55 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  String _selectedFrequency = 'Daily';
-  String _selectedSlot = 'Morning (6:30 AM - 8:30 AM)';
-  int _cansPerDelivery = 1;
+  String _selectedFrequency = 'Daily'; // Daily, Alternate, Custom
+  int _canQuantity = 1;
   bool _isPaused = false;
-  bool _isLoading = false;
+  final Set<int> _pausedDates = {14, 15, 16}; // Example pre-paused vacation dates
+  final Set<int> _deliveredDates = {1, 2, 3, 4, 5, 6, 7}; // Oct dates
 
-  final List<String> _frequencies = ['Daily', 'Alternate Days', 'Weekly 3 Days'];
-  final List<String> _slots = [
-    'Morning (6:30 AM - 8:30 AM)',
-    'Evening (5:00 PM - 7:00 PM)'
-  ];
+  final List<String> _frequencies = ['Daily', 'Alternate Days', 'Custom Days'];
 
-  Future<void> _saveSubscription() async {
-    setState(() => _isLoading = true);
-    try {
-      await FirebaseFirestore.instance.collection('subscriptions').add({
-        'planName': '$_selectedFrequency Plan',
-        'frequency': _selectedFrequency,
-        'slot': _selectedSlot,
-        'quantity': _cansPerDelivery,
-        'isPaused': _isPaused,
-        'pricePerCan': 35, // Discounted for subscribers
-        'createdAt': FieldValue.serverTimestamp(),
-        'status': 'ACTIVE',
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: AppColors.primaryDark,
-            content: Text('Subscription Activated Successfully!'),
+  void _togglePauseDelivery() {
+    setState(() {
+      _isPaused = !_isPaused;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: _isPaused ? Colors.orange.shade800 : AppColors.primary,
+        content: Text(
+          _isPaused
+              ? 'Subscription paused! Deliveries put on hold.'
+              : 'Subscription resumed! Water deliveries active.',
+        ),
+      ),
+    );
+  }
+
+  void _showCustomPlanDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Custom Delivery Days', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            CheckboxListTile(value: true, onChanged: null, title: Text('Monday')),
+            CheckboxListTile(value: false, onChanged: null, title: Text('Tuesday')),
+            CheckboxListTile(value: true, onChanged: null, title: Text('Wednesday')),
+            CheckboxListTile(value: false, onChanged: null, title: Text('Thursday')),
+            CheckboxListTile(value: true, onChanged: null, title: Text('Friday')),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('SAVE DAYS'),
           ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text('Failed to save subscription. Check network.'),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+        ],
+      ),
+    );
   }
 
   @override
@@ -65,7 +68,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         backgroundColor: AppColors.primary,
         elevation: 0,
         title: const Text(
-          'WATER SUBSCRIPTIONS',
+          'WATER SUBSCRIPTION',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w900,
@@ -73,91 +76,117 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             color: Colors.white,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(_isPaused ? Icons.play_circle_fill_rounded : Icons.pause_circle_filled_rounded, color: Colors.white),
+            onPressed: _togglePauseDelivery,
+            tooltip: _isPaused ? 'Resume Plan' : 'Pause Vacation Mode',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.defaultPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Pause/Resume Banner
+            // Status Banner
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: _isPaused ? const Color(0xFFFEF3C7) : AppColors.surface,
-                borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-                border: Border.all(
-                  color: _isPaused ? AppColors.accentDark : AppColors.border,
-                ),
+                color: _isPaused ? const Color(0xFFFEF3C7) : const Color(0xFFDCFCE7),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _isPaused ? const Color(0xFFFDE68A) : const Color(0xFFBBF7D0)),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        _isPaused ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
-                        color: _isPaused ? AppColors.accentDark : AppColors.primary,
-                        size: 26,
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _isPaused ? 'Subscription Paused' : 'Subscription Active',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                          ),
-                          Text(
-                            _isPaused ? 'No deliveries scheduled' : 'Deliveries running normally',
-                            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                          ),
-                        ],
-                      ),
-                    ],
+                  Icon(
+                    _isPaused ? Icons.pause_circle_outline_rounded : Icons.check_circle_outline_rounded,
+                    color: _isPaused ? const Color(0xFFB45309) : const Color(0xFF15803D),
                   ),
-                  Switch(
-                    value: !_isPaused,
-                    activeColor: AppColors.primary,
-                    onChanged: (val) {
-                      setState(() => _isPaused = !val);
-                    },
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _isPaused ? 'Subscription On Pause' : 'Active Subscription: 20L Can Daily',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: _isPaused ? const Color(0xFF92400E) : const Color(0xFF166534),
+                          ),
+                        ),
+                        Text(
+                          _isPaused ? 'Deliveries resumed automatically next week' : 'Next Drop: Tomorrow Morning (8:00 AM - 3:00 PM)',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: _isPaused ? const Color(0xFFB45309) : const Color(0xFF15803D),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _togglePauseDelivery,
+                    child: Text(
+                      _isPaused ? 'RESUME' : 'PAUSE',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: _isPaused ? const Color(0xFF92400E) : const Color(0xFF166534),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
 
-            // Frequency Options
+            // Plan Frequency Switcher
             const Text(
-              'DELIVERY FREQUENCY',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.textSecondary),
+              'SELECT SUBSCRIPTION PATTERN',
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.textSecondary, letterSpacing: 0.5),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Row(
               children: _frequencies.map((freq) {
                 final isSelected = _selectedFrequency == freq;
                 return Expanded(
                   child: GestureDetector(
-                    onTap: () => setState(() => _selectedFrequency = freq),
+                    onTap: () {
+                      setState(() => _selectedFrequency = freq);
+                      if (freq == 'Custom Days') {
+                        _showCustomPlanDialog();
+                      }
+                    },
                     child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      margin: const EdgeInsets.only(right: 6),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary.withOpacity(0.12) : AppColors.surface,
+                        color: isSelected ? AppColors.primary : AppColors.surface,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: isSelected ? AppColors.primary : AppColors.border,
-                          width: isSelected ? 2 : 1,
                         ),
                       ),
-                      child: Text(
-                        freq,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? AppColors.primaryDark : AppColors.textPrimary,
-                        ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            freq == 'Daily' ? Icons.calendar_today_rounded : (freq == 'Alternate Days' ? Icons.repeat_rounded : Icons.tune_rounded),
+                            color: isSelected ? Colors.white : AppColors.textSecondary,
+                            size: 18,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            freq,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected ? Colors.white : AppColors.textPrimary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -166,126 +195,192 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Preferred Slot
-            const Text(
-              'PREFERRED TIME SLOT',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 10),
-            Column(
-              children: _slots.map((slot) {
-                final isSelected = _selectedSlot == slot;
-                return GestureDetector(
-                  onTap: () => setState(() => _selectedSlot = slot),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppColors.accent.withOpacity(0.15) : AppColors.surface,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isSelected ? AppColors.accentDark : AppColors.border,
-                        width: isSelected ? 2 : 1,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              slot.contains('Morning') ? Icons.wb_sunny_rounded : Icons.nights_stay_rounded,
-                              color: isSelected ? AppColors.accentDark : AppColors.textSecondary,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              slot,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: isSelected ? AppColors.textOnAccent : AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (isSelected)
-                          const Icon(Icons.check_circle_rounded, color: AppColors.accentDark, size: 20),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-
-            // Quantity Selection
+            // Daily Bottle Quantity Counter
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Cans Per Delivery', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      Text('20L Mineral Water Can', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                    children: const [
+                      Text('Cans Per Delivery', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary)),
+                      Text('Standard 20-Litre Pure Mineral Water', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                     ],
                   ),
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () {
-                          if (_cansPerDelivery > 1) {
-                            setState(() => _cansPerDelivery--);
-                          }
-                        },
-                        icon: const Icon(Icons.remove_circle, color: AppColors.primary, size: 28),
+                        onPressed: _canQuantity > 1 ? () => setState(() => _canQuantity--) : null,
+                        icon: const Icon(Icons.remove_circle_outline, color: AppColors.primary),
                       ),
-                      Text(
-                        '$_cansPerDelivery',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                      ),
+                      Text('$_canQuantity', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
                       IconButton(
-                        onPressed: () => setState(() => _cansPerDelivery++),
-                        icon: const Icon(Icons.add_circle, color: AppColors.primary, size: 28),
+                        onPressed: () => setState(() => _canQuantity++),
+                        icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 24),
 
-            // Submit Button
+            // October 2026 Delivery Calendar
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  'DELIVERY CALENDAR (OCTOBER 2026)',
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.textSecondary, letterSpacing: 0.5),
+                ),
+                Text(
+                  'Tap date to skip',
+                  style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: const [
+                      Text('M', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.textSecondary)),
+                      Text('T', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.textSecondary)),
+                      Text('W', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.textSecondary)),
+                      Text('T', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.textSecondary)),
+                      Text('F', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.textSecondary)),
+                      Text('S', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.textSecondary)),
+                      Text('S', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.textSecondary)),
+                    ],
+                  ),
+                  const Divider(height: 16),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 31,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 7,
+                      mainAxisSpacing: 6,
+                      crossAxisSpacing: 6,
+                    ),
+                    itemBuilder: (ctx, idx) {
+                      final day = idx + 1;
+                      final isDelivered = _deliveredDates.contains(day);
+                      final isPausedDay = _pausedDates.contains(day);
+                      final isToday = day == 7;
+
+                      Color bg = AppColors.background;
+                      Color txt = AppColors.textPrimary;
+                      if (isDelivered) {
+                        bg = const Color(0xFFDCFCE7);
+                        txt = const Color(0xFF15803D);
+                      } else if (isPausedDay) {
+                        bg = const Color(0xFFFEE2E2);
+                        txt = const Color(0xFFB91C1C);
+                      }
+
+                      return GestureDetector(
+                        onTap: () {
+                          if (!isDelivered) {
+                            setState(() {
+                              if (_pausedDates.contains(day)) {
+                                _pausedDates.remove(day);
+                              } else {
+                                _pausedDates.add(day);
+                              }
+                            });
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: bg,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isToday ? AppColors.primary : Colors.transparent,
+                              width: isToday ? 2 : 1,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '$day',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: isToday ? FontWeight.w900 : FontWeight.bold,
+                              color: txt,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _legend(const Color(0xFFDCFCE7), 'Delivered'),
+                      _legend(const Color(0xFFFEE2E2), 'Skipped / Paused'),
+                      _legend(AppColors.background, 'Scheduled'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Confirm Plan CTA
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 48,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _saveSubscription,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppConstants.buttonBorderRadius),
-                  ),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'ACTIVATE SUBSCRIPTION',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 0.8),
-                      ),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: AppColors.primaryDark,
+                      content: Text('Plan Confirmed: $_canQuantity Can ($_selectedFrequency)'),
+                    ),
+                  );
+                },
+                child: const Text('UPDATE SUBSCRIPTION ROUTINE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _legend(Color color, String text) {
+    return Row(
+      children: [
+        Container(
+          height: 10,
+          width: 10,
+          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2), border: Border.all(color: Colors.black12)),
+        ),
+        const SizedBox(width: 4),
+        Text(text, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+      ],
     );
   }
 }

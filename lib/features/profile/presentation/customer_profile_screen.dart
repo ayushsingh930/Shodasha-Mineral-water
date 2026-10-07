@@ -1,8 +1,54 @@
-import 'package:flutter/material.dart';
-import '../../../../core/constants/app_constants.dart';
+﻿import 'package:flutter/material.dart';
+import '../../../core/constants/app_constants.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
   const CustomerProfileScreen({super.key});
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 18, bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w900,
+          color: AppColors.textSecondary,
+          letterSpacing: 0.8,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTile({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    Widget? trailing,
+    VoidCallback? onTap,
+    Color? iconColor,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: ListTile(
+        dense: true,
+        leading: Icon(icon, color: iconColor ?? AppColors.primary, size: 22),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary),
+        ),
+        subtitle: subtitle != null
+            ? Text(subtitle, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary))
+            : null,
+        trailing: trailing ?? const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textSecondary),
+        onTap: onTap,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +58,7 @@ class CustomerProfileScreen extends StatelessWidget {
         backgroundColor: AppColors.primary,
         elevation: 0,
         title: const Text(
-          'PROFILE & SETTINGS',
+          'ACCOUNT & PROFILE',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w900,
@@ -24,6 +70,7 @@ class CustomerProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.defaultPadding),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // User Header Card
             Container(
@@ -32,137 +79,191 @@ class CustomerProfileScreen extends StatelessWidget {
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
                 border: Border.all(color: AppColors.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.02),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: AppColors.primary.withOpacity(0.15),
+                  Container(
+                    height: 56,
+                    width: 56,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.12),
+                      shape: BoxShape.circle,
+                    ),
                     child: const Icon(Icons.person, color: AppColors.primary, size: 32),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Ayush Singh',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              'Ayush Singh',
+                              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.textPrimary),
+                            ),
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFEF9C3),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text(
+                                'GOLD TIER',
+                                style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Color(0xFF854D0E)),
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 2),
-                        Text(
+                        const SizedBox(height: 3),
+                        const Text(
                           '+91 98765 43210',
-                          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                          style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
                         ),
-                        SizedBox(height: 2),
-                        Text(
-                          'Bhopal, Madhya Pradesh',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Emergency SOS & Support Card (Blueprint Feature)
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFEF2F2),
-                borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-                border: Border.all(color: const Color(0xFFFECACA)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent.withOpacity(0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.sos_rounded, color: Colors.redAccent, size: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Delivery Late? Talk to Support',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF991B1B)),
-                        ),
-                        Text(
-                          'Connect directly with City Plant Central',
-                          style: TextStyle(fontSize: 11, color: Color(0xFFB91C1C)),
+                        const SizedBox(height: 2),
+                        const Text(
+                          'Bhopal Central Zone',
+                          style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                   ),
-                  ElevatedButton(
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined, color: AppColors.textSecondary, size: 20),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Connecting to Plant Dispatcher Helpline...')),
+                        const SnackBar(content: Text('Edit profile dialog coming up!')),
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: const Text('HELP', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
 
-            // Settings List Tiles
+            // Quick Stats Banner
+            const SizedBox(height: 12),
             Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-                border: Border.all(color: AppColors.border),
+                color: const Color(0xFFF0FDF4),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFBBF7D0)),
               ),
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.location_on_outlined, color: AppColors.primary),
-                    title: const Text('Delivery Addresses', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                    subtitle: const Text('Flat 402, Arera Colony, Bhopal', style: TextStyle(fontSize: 12)),
-                    trailing: const Icon(Icons.chevron_right, size: 20),
-                    onTap: () {},
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text(
+                    'Active Bottles with You:',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF166534)),
                   ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.notifications_none_rounded, color: AppColors.primary),
-                    title: const Text('Delivery Alerts', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                    subtitle: const Text('Morning slot notifications', style: TextStyle(fontSize: 12)),
-                    trailing: const Icon(Icons.chevron_right, size: 20),
-                    onTap: () {},
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.receipt_long_outlined, color: AppColors.primary),
-                    title: const Text('GST Invoices', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                    subtitle: const Text('Monthly billing reports', style: TextStyle(fontSize: 12)),
-                    trailing: const Icon(Icons.chevron_right, size: 20),
-                    onTap: () {},
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.logout_rounded, color: Colors.redAccent),
-                    title: const Text('Logout', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.redAccent)),
-                    onTap: () {},
+                  Text(
+                    '4 Rented Cans',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Color(0xFF15803D)),
                   ),
                 ],
               ),
             ),
+
+            // 1. Delivery & Schedule Section
+            _buildSectionHeader('DELIVERY & LOCATIONS'),
+            _buildTile(
+              icon: Icons.location_on_outlined,
+              title: 'Primary Delivery Location',
+              subtitle: 'Flat 402, Arera Colony, Bhopal',
+              onTap: () {},
+            ),
+            _buildTile(
+              icon: Icons.access_time_rounded,
+              title: 'Preferred Time Slot',
+              subtitle: 'Morning (8:00 AM - 3:00 PM)',
+              onTap: () {},
+            ),
+
+            // 2. Billing & Security
+            _buildSectionHeader('PAYMENTS & LEDGER'),
+            _buildTile(
+              icon: Icons.account_balance_wallet_outlined,
+              title: 'Security Deposit Balance',
+              subtitle: 'Rs 1500.00 (Refundable)',
+              trailing: const Text(
+                'Rs 1500',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: AppColors.primary),
+              ),
+              onTap: () {},
+            ),
+            _buildTile(
+              icon: Icons.receipt_long_outlined,
+              title: 'Billing Invoices & Receipts',
+              subtitle: 'Download monthly water statements',
+              onTap: () {},
+            ),
+
+            // 3. Plant & Quality Trust
+            _buildSectionHeader('QUALITY & PURITY GUARANTEE'),
+            _buildTile(
+              icon: Icons.verified_outlined,
+              title: 'TDS & Purity Certificate',
+              subtitle: 'Current Plant TDS: 110 ppm • ISO 9001:2015',
+              iconColor: const Color(0xFF0284C7),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    title: const Text('Water Purity Specs', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                    content: const Text(
+                      '• Plant: Govindpura Industrial Hub\n• Multi-Stage RO + UV + Ozonation\n• Packed in BPA-free Food Grade Cans\n• Batch Lab Tested Daily',
+                      style: TextStyle(fontSize: 13, height: 1.5),
+                    ),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK')),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            // 4. Help & Support
+            _buildSectionHeader('HELP & ASSISTANCE'),
+            _buildTile(
+              icon: Icons.support_agent_rounded,
+              title: 'Customer Care & Plant Desk',
+              subtitle: 'Instant WhatsApp & Call Support',
+              iconColor: const Color(0xFF16A34A),
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Support line: +91 755-SHODASHA (Bhopal Hub)')),
+                );
+              },
+            ),
+            _buildTile(
+              icon: Icons.logout_rounded,
+              title: 'Log Out',
+              subtitle: 'Sign out from this device',
+              iconColor: Colors.redAccent,
+              trailing: const SizedBox.shrink(),
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('User logout triggered')),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            Center(
+              child: Text(
+                'Shodasha Mineral Water v1.0.4 • Build 2026',
+                style: TextStyle(color: AppColors.textSecondary.withOpacity(0.6), fontSize: 11),
+              ),
+            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
