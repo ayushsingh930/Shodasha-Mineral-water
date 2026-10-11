@@ -1,265 +1,153 @@
 ﻿import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import 'support_help_screen.dart';
-import 'saved_addresses_screen.dart';
+import '../../orders/presentation/rider_dashboard_screen.dart';
 
-class CustomerProfileScreen extends StatefulWidget {
+class CustomerProfileScreen extends StatelessWidget {
   const CustomerProfileScreen({super.key});
 
   @override
-  State<CustomerProfileScreen> createState() => _CustomerProfileScreenState();
-}
-
-class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
-  final AddressStateService _addressService = AddressStateService.instance;
-
-  @override
-  void initState() {
-    super.initState();
-    _addressService.addListener(_onAddressUpdate);
-  }
-
-  void _onAddressUpdate() {
-    if (mounted) setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _addressService.removeListener(_onAddressUpdate);
-    super.dispose();
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 18, bottom: 8),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w900,
-          color: AppColors.textSecondary,
-          letterSpacing: 0.8,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+        title: const Text(
+          'ACCOUNT & SETTINGS',
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white, letterSpacing: 1.1),
         ),
+        backgroundColor: const Color(0xFF0F172A),
+        elevation: 0,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: const Color(0xFF0284C7).withOpacity(0.1),
+                  child: const Text('AS', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF0284C7), fontSize: 18)),
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Ayush Singh', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                      SizedBox(height: 2),
+                      Text('+91 98930 12345', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(8)),
+                  child: const Text('VERIFIED', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Color(0xFF15803D))),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 4)),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0284C7),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        'MNC ECOSYSTEM MODE',
+                        style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                    const Icon(Icons.swap_horiz_rounded, color: Colors.white70, size: 22),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Switch to Delivery Fleet Cockpit',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Simulate live van route, customer PIN verification, and empty bottle collection.',
+                  style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0284C7),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const RiderDashboardScreen()),
+                      );
+                    },
+                    icon: const Icon(Icons.delivery_dining, size: 20),
+                    label: const Text(
+                      'OPEN RIDER COCKPIT',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text('APP SETTINGS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Color(0xFF64748B), letterSpacing: 0.8)),
+          const SizedBox(height: 8),
+          _buildTile(Icons.location_on_outlined, 'Saved Addresses', 'Flat 402, Royal Palms, Bhopal'),
+          _buildTile(Icons.account_balance_wallet_outlined, 'Shodasha Wallet', 'Rs 240.00 Balance'),
+          _buildTile(Icons.security_outlined, 'Water Quality Standards', 'ISO 9001 & BIS Certified'),
+          _buildTile(Icons.support_agent_outlined, 'Bhopal Plant Support', '24x7 Helpline active'),
+        ],
       ),
     );
   }
 
-  Widget _buildTile({
-    required IconData icon,
-    required String title,
-    String? subtitle,
-    Widget? trailing,
-    VoidCallback? onTap,
-    Color? iconColor,
-  }) {
+  static Widget _buildTile(IconData icon, String title, String subtitle) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: ListTile(
-        dense: true,
-        leading: Icon(icon, color: iconColor ?? AppColors.primary, size: 22),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary),
-        ),
-        subtitle: subtitle != null
-            ? Text(subtitle, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary))
-            : null,
-        trailing: trailing ?? const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textSecondary),
-        onTap: onTap,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final activeAddr = _addressService.activeAddress;
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        title: const Text(
-          'ACCOUNT & PROFILE',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.1,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppConstants.defaultPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-                border: Border.all(color: AppColors.border),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    height: 56,
-                    width: 56,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.person, color: AppColors.primary, size: 32),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Text(
-                              'Ayush Singh',
-                              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.textPrimary),
-                            ),
-                            const SizedBox(width: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFEF9C3),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: const Text(
-                                'GOLD TIER',
-                                style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Color(0xFF854D0E)),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 3),
-                        const Text(
-                          '+91 98765 43210',
-                          style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 2),
-                        const Text(
-                          'Bhopal Central Zone',
-                          style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFBBF7D0)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    'Active Bottles with You:',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF166534)),
-                  ),
-                  Text(
-                    '4 Rented Cans',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Color(0xFF15803D)),
-                  ),
-                ],
-              ),
-            ),
-            _buildSectionHeader('DELIVERY & LOCATIONS'),
-            _buildTile(
-              icon: Icons.location_on_outlined,
-              title: 'Primary Delivery Location',
-              subtitle: '${activeAddr.tag}: ${activeAddr.title}',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SavedAddressesScreen()),
-                );
-              },
-            ),
-            _buildTile(
-              icon: Icons.access_time_rounded,
-              title: 'Preferred Time Slot',
-              subtitle: 'Morning (8:00 AM - 3:00 PM)',
-              onTap: () {},
-            ),
-            _buildSectionHeader('PAYMENTS & LEDGER'),
-            _buildTile(
-              icon: Icons.account_balance_wallet_outlined,
-              title: 'Security Deposit Balance',
-              subtitle: 'Rs 1500.00 (Refundable)',
-              trailing: const Text(
-                'Rs 1500',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: AppColors.primary),
-              ),
-              onTap: () {},
-            ),
-            _buildSectionHeader('QUALITY & PURITY GUARANTEE'),
-            _buildTile(
-              icon: Icons.verified_outlined,
-              title: 'TDS & Purity Certificate',
-              subtitle: 'Current Plant TDS: 110 ppm • ISO 9001:2015',
-              iconColor: const Color(0xFF0284C7),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    title: const Text('Water Purity Specs', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                    content: const Text(
-                      '• Plant: Govindpura Industrial Hub\n• Multi-Stage RO + UV + Ozonation\n• Packed in BPA-free Food Grade Cans\n• Batch Lab Tested Daily',
-                      style: TextStyle(fontSize: 13, height: 1.5),
-                    ),
-                    actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))],
-                  ),
-                );
-              },
-            ),
-            _buildSectionHeader('HELP & ASSISTANCE'),
-            _buildTile(
-              icon: Icons.support_agent_rounded,
-              title: 'Customer Care & Plant Desk',
-              subtitle: 'Instant WhatsApp & Call Support',
-              iconColor: const Color(0xFF16A34A),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SupportHelpScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            Center(
-              child: Text(
-                'Shodasha Mineral Water v1.0.4 • Bhopal Plant Hub',
-                style: TextStyle(color: AppColors.textSecondary.withOpacity(0.6), fontSize: 11),
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
+        leading: Icon(icon, color: const Color(0xFF0F172A)),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+        trailing: const Icon(Icons.chevron_right, size: 20, color: Color(0xFF94A3B8)),
       ),
     );
   }
