@@ -27,7 +27,7 @@ class OrderItem {
     this.orderedCansCount = 2,
     required this.eta,
     required this.date,
-    required this.deliveryPin,
+    this.deliveryPin = '5892',
   });
 }
 

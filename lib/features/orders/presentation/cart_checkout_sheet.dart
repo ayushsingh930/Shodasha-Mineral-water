@@ -229,6 +229,7 @@ class _CartCheckoutSheetState extends State<CartCheckoutSheet> {
                   emptyCansToReturn: _canCount,
                   eta: '~20 mins',
                   date: 'Today',
+                      deliveryPin: '',
                 );
 
                 final notifier = OrderStateNotifier.instance;
