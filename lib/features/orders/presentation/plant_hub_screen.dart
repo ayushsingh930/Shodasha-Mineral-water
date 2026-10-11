@@ -1,9 +1,141 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
 import '../data/order_service.dart';
+import '../data/plant_service.dart';
 
 class PlantHubScreen extends StatelessWidget {
   const PlantHubScreen({super.key});
+
+  void _showUpdateDataDialog(BuildContext context) {
+    final plant = PlantTelemetryNotifier.instance;
+    final stockCtrl = TextEditingController(text: plant.basePlantStock.toString());
+    final batchCtrl = TextEditingController(text: plant.batchNumber);
+    final tdsCtrl = TextEditingController(text: plant.tdsValue.toString());
+    final phCtrl = TextEditingController(text: plant.phValue.toString());
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1E293B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'FEED REAL PLANT DATA',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white70),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const Text(
+                'Enter ground metrics measured at Bhopal Plant today.',
+                style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildInput('Batch Number', batchCtrl, TextInputType.text),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildInput('Total Cans Stock', stockCtrl, TextInputType.number),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildInput('Tested TDS (ppm)', tdsCtrl, TextInputType.number),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildInput('Tested pH Level', phCtrl, const TextInputType.numberWithOptions(decimal: true)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0284C7),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () {
+                    final int? stock = int.tryParse(stockCtrl.text.trim());
+                    final int? tds = int.tryParse(tdsCtrl.text.trim());
+                    final double? ph = double.tryParse(phCtrl.text.trim());
+                    final String batch = batchCtrl.text.trim();
+
+                    if (stock != null && tds != null && ph != null && batch.isNotEmpty) {
+                      PlantTelemetryNotifier.instance.updatePlantData(
+                        newStock: stock,
+                        newBatch: batch,
+                        newTds: tds,
+                        newPh: ph,
+                      );
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Color(0xFF16A34A),
+                          content: Text('Bhopal Plant Live Data Updated & Synced!'),
+                        ),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.save_rounded, size: 20),
+                  label: const Text('SAVE & SYNC TELEMETRY', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  static Widget _buildInput(String label, TextEditingController ctrl, TextInputType type) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 6),
+        TextField(
+          controller: ctrl,
+          keyboardType: type,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFF0F172A),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,28 +161,35 @@ class PlantHubScreen extends StatelessWidget {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_note_rounded, color: Color(0xFF38BDF8), size: 26),
+            tooltip: 'Feed Real Plant Data',
+            onPressed: () => _showUpdateDataDialog(context),
+          ),
+        ],
       ),
       body: AnimatedBuilder(
-        animation: OrderStateNotifier.instance,
+        animation: Listenable.merge([OrderStateNotifier.instance, PlantTelemetryNotifier.instance]),
         builder: (context, _) {
+          final plant = PlantTelemetryNotifier.instance;
           final activeOrders = OrderStateNotifier.instance.activeOrders;
           final completedOrders = OrderStateNotifier.instance.completedOrders;
-          
+
           final dispatchedCans = OrderStateNotifier.instance.totalVanStockRemaining;
           final collectedEmpties = OrderStateNotifier.instance.totalEmptyCansCollected;
-          
-          // Factory Stock Balance Math
-          const int basePlantStock = 450;
-          final int currentAvailableStock = basePlantStock - dispatchedCans;
-          
-          // COD / Cash Math
+
+          // Real Vendor Fed Inventory Math
+          final int currentAvailableStock = plant.basePlantStock - dispatchedCans;
+
+          // Financial Settlement
           final int deliveredCount = activeOrders.where((o) => o.status == 'DELIVERED').length + completedOrders.length;
           final int totalRevenue = (deliveredCount * 130) + (dispatchedCans * 65);
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // WATER PURITY LAB REPORT (MNC QUALITY ASSURANCE)
+              // LIVE PURITY LAB REPORT (VENDOR-FED)
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -80,7 +219,7 @@ class PlantHubScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(color: const Color(0xFF16A34A), borderRadius: BorderRadius.circular(6)),
-                          child: const Text('BATCH #BHP-X4 CERTIFIED', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.white)),
+                          child: Text('BATCH #${plant.batchNumber}', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.white)),
                         ),
                       ],
                     ),
@@ -88,14 +227,32 @@ class PlantHubScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _purityMetric('TDS VALUE', '85 ppm', 'Pure Mineral (60-120)'),
+                        _purityMetric('TDS VALUE', '${plant.tdsValue} ppm', 'Pure Mineral (60-120)'),
                         Container(height: 36, width: 1, color: Colors.white24),
-                        _purityMetric('PH BALANCE', '7.2 pH', 'Optimal Alkaline'),
+                        _purityMetric('PH BALANCE', '${plant.phValue} pH', 'Optimal Alkaline'),
                         Container(height: 36, width: 1, color: Colors.white24),
                         _purityMetric('OZONATION', 'Active', '9-Stage RO + UV'),
                       ],
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // ACTION: FEED REAL DATA BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 42,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1C2541),
+                    foregroundColor: const Color(0xFF38BDF8),
+                    side: const BorderSide(color: Color(0xFF0284C7)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  onPressed: () => _showUpdateDataDialog(context),
+                  icon: const Icon(Icons.edit_calendar_rounded, size: 18),
+                  label: const Text('FEED TODAY\'S REAL LAB & STOCK DATA', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12)),
                 ),
               ),
               const SizedBox(height: 18),
