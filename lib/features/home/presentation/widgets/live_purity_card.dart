@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../orders/data/plant_service.dart';
 
 class LivePurityCard extends StatelessWidget {
@@ -13,20 +14,16 @@ class LivePurityCard extends StatelessWidget {
 
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFF0284C7).withOpacity(0.4)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+            border: Border.all(color: AppColors.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withOpacity(0.03),
                 blurRadius: 8,
-                offset: const Offset(0, 3),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -41,46 +38,54 @@ class LivePurityCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0284C7).withOpacity(0.2),
+                          color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.water_drop, color: Color(0xFF38BDF8), size: 16),
+                        child: const Icon(Icons.water_drop, color: AppColors.primary, size: 16),
                       ),
                       const SizedBox(width: 8),
                       const Text(
                         'BHOPAL PLANT PURITY REPORT',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
+                          color: AppColors.textPrimary,
+                          fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 0.8,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF15803D),
+                      color: const Color(0xFFDCFCE7),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       'BATCH #${plant.batchNumber}',
-                      style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900),
+                      style: const TextStyle(color: Color(0xFF15803D), fontSize: 9, fontWeight: FontWeight.w900),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _chip('TDS VALUE', '${plant.tdsValue} ppm', 'Pure Mineral'),
-                  Container(height: 28, width: 1, color: const Color(0xFF334155)),
-                  _chip('PH LEVEL', '${plant.phValue} pH', 'Alkaline Balance'),
-                  Container(height: 28, width: 1, color: const Color(0xFF334155)),
-                  _chip('PURIFICATION', '9-Stage', 'RO + UV + Ozone'),
-                ],
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _chip('TDS VALUE', '${plant.tdsValue} ppm', 'Pure Mineral'),
+                    Container(height: 28, width: 1, color: AppColors.border),
+                    _chip('PH LEVEL', '${plant.phValue} pH', 'Alkaline Balance'),
+                    Container(height: 28, width: 1, color: AppColors.border),
+                    _chip('PURIFICATION', '9-Stage', 'RO + UV + Ozone'),
+                  ],
+                ),
               ),
             ],
           ),
@@ -92,10 +97,10 @@ class LivePurityCard extends StatelessWidget {
   Widget _chip(String title, String val, String sub) {
     return Column(
       children: [
-        Text(val, style: const TextStyle(color: Color(0xFF38BDF8), fontWeight: FontWeight.w900, fontSize: 14)),
+        Text(val, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w900, fontSize: 14)),
         const SizedBox(height: 2),
-        Text(title, style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w700, fontSize: 9)),
-        Text(sub, style: const TextStyle(color: Color(0xFF64748B), fontSize: 8)),
+        Text(title, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w700, fontSize: 9)),
+        Text(sub, style: const TextStyle(color: AppColors.textSecondary, fontSize: 8)),
       ],
     );
   }
