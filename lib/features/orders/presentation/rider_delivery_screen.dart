@@ -5,7 +5,7 @@ import '../data/order_service.dart';
 class RiderDeliveryScreen extends StatefulWidget {
   final OrderItem order;
 
-  const RiderDeliveryScreen({super.key});
+  const RiderDeliveryScreen({super.key, required this.order});
 
   @override
   State<RiderDeliveryScreen> createState() => _RiderDeliveryScreenState();
