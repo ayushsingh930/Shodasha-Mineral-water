@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../orders/presentation/rider_dashboard_screen.dart';
+import '../../orders/presentation/plant_hub_screen.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
   const CustomerProfileScreen({super.key});
@@ -53,6 +54,8 @@ class CustomerProfileScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+
+          // ENTERPRISE ROLE SWITCHER (MNC WORKSPACE: RIDER & PLANT)
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
@@ -79,46 +82,77 @@ class CustomerProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: const Text(
-                        'MNC ECOSYSTEM MODE',
+                        'MNC ENTERPRISE SUITE',
                         style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900),
                       ),
                     ),
-                    const Icon(Icons.swap_horiz_rounded, color: Colors.white70, size: 22),
+                    const Icon(Icons.corporate_fare_rounded, color: Colors.white70, size: 22),
                   ],
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Switch to Delivery Fleet Cockpit',
+                  'Enterprise Operational Consoles',
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'Simulate live van route, customer PIN verification, and empty bottle collection.',
+                  'Switch between Van Fleet Cockpit and Bhopal Factory Inventory Hub.',
                   style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0284C7),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 44,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0284C7),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const RiderDashboardScreen()),
+                            );
+                          },
+                          icon: const Icon(Icons.delivery_dining, size: 18),
+                          label: const Text(
+                            'RIDER FLEET',
+                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12),
+                          ),
+                        ),
+                      ),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const RiderDashboardScreen()),
-                      );
-                    },
-                    icon: const Icon(Icons.delivery_dining, size: 20),
-                    label: const Text(
-                      'OPEN RIDER COCKPIT',
-                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: SizedBox(
+                        height: 44,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1C2541),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            side: const BorderSide(color: Color(0xFF38BDF8)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const PlantHubScreen()),
+                            );
+                          },
+                          icon: const Icon(Icons.factory_rounded, size: 18, color: Color(0xFF38BDF8)),
+                          label: const Text(
+                            'BHOPAL PLANT',
+                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Color(0xFF38BDF8)),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
