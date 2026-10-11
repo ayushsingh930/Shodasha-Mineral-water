@@ -6,7 +6,7 @@ class AddressModel {
   final String title;
   final String fullAddress;
   final String contact;
-  final bool isDefault;
+  bool isDefault;
 
   AddressModel({
     required this.id,
@@ -37,6 +37,21 @@ class AddressStateService extends ChangeNotifier {
       isDefault: false,
     ),
   ];
+
+  // Active address getter for checkout & order placement
+  AddressModel get activeAddress {
+    return addresses.firstWhere(
+      (a) => a.isDefault,
+      orElse: () => addresses.first,
+    );
+  }
+
+  void setActiveAddress(String id) {
+    for (var a in addresses) {
+      a.isDefault = (a.id == id);
+    }
+    notifyListeners();
+  }
 
   void addAddress(String title, String fullAddress, String contact) {
     addresses.add(
@@ -75,34 +90,40 @@ class SavedAddressesScreen extends StatelessWidget {
             itemCount: list.length,
             itemBuilder: (ctx, i) {
               final item = list[i];
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-                  border: Border.all(color: item.isDefault ? AppColors.primary : AppColors.border, width: item.isDefault ? 1.5 : 1),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(item.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.textPrimary)),
-                        if (item.isDefault)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(6)),
-                            child: const Text('DEFAULT', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: Color(0xFF15803D))),
-                          ),
-                      ],
+              return InkWell(
+                onTap: () => AddressStateService.instance.setActiveAddress(item.id),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                    border: Border.all(
+                      color: item.isDefault ? AppColors.primary : AppColors.border,
+                      width: item.isDefault ? 1.5 : 1,
                     ),
-                    const SizedBox(height: 6),
-                    Text(item.fullAddress, style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.3)),
-                    const SizedBox(height: 4),
-                    Text(item.contact, style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
-                  ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(item.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.textPrimary)),
+                          if (item.isDefault)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(6)),
+                              child: const Text('DEFAULT', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: Color(0xFF15803D))),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(item.fullAddress, style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.3)),
+                      const SizedBox(height: 4),
+                      Text(item.contact, style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
                 ),
               );
             },
