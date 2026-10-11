@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../orders/data/plant_service.dart';
 
@@ -14,7 +15,7 @@ class LivePurityCard extends StatelessWidget {
 
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
@@ -36,39 +37,44 @@ class LivePurityCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(6),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.water_drop, color: AppColors.primary, size: 16),
+                        child: const Icon(Icons.water_drop, color: AppColors.primary, size: 15),
                       ),
                       const SizedBox(width: 8),
-                      const Text(
+                      Text(
                         'BHOPAL PLANT PURITY REPORT',
-                        style: TextStyle(
+                        style: GoogleFonts.plusJakartaSans(
                           color: AppColors.textPrimary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.5,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.4,
                         ),
                       ),
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                     decoration: BoxDecoration(
                       color: const Color(0xFFDCFCE7),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       'BATCH #${plant.batchNumber}',
-                      style: const TextStyle(color: Color(0xFF15803D), fontSize: 9, fontWeight: FontWeight.w900),
+                      style: GoogleFonts.plusJakartaSans(
+                        color: const Color(0xFF15803D),
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                 decoration: BoxDecoration(
@@ -97,10 +103,33 @@ class LivePurityCard extends StatelessWidget {
   Widget _chip(String title, String val, String sub) {
     return Column(
       children: [
-        Text(val, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w900, fontSize: 14)),
+        Text(
+          val,
+          style: GoogleFonts.inter(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w900,
+            fontSize: 14.5,
+            letterSpacing: -0.2,
+          ),
+        ),
         const SizedBox(height: 2),
-        Text(title, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w700, fontSize: 9)),
-        Text(sub, style: const TextStyle(color: AppColors.textSecondary, fontSize: 8)),
+        Text(
+          title,
+          style: GoogleFonts.plusJakartaSans(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w800,
+            fontSize: 9,
+            letterSpacing: 0.2,
+          ),
+        ),
+        Text(
+          sub,
+          style: GoogleFonts.inter(
+            color: AppColors.textSecondary,
+            fontSize: 8.5,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
