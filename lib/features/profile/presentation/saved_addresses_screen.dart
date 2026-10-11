@@ -3,14 +3,20 @@ import '../../../core/constants/app_constants.dart';
 
 class AddressModel {
   final String id;
+  final String tag;
   final String title;
+  final String landmark;
+  final String floor;
   final String fullAddress;
   final String contact;
   bool isDefault;
 
   AddressModel({
     required this.id,
+    required this.tag,
     required this.title,
+    required this.landmark,
+    required this.floor,
     required this.fullAddress,
     required this.contact,
     this.isDefault = false,
@@ -24,21 +30,26 @@ class AddressStateService extends ChangeNotifier {
   final List<AddressModel> addresses = [
     AddressModel(
       id: 'addr_1',
-      title: 'Home (Primary)',
+      tag: 'HOME',
+      title: 'Royal Palms Apartment',
+      landmark: 'Near Arera Colony Market',
+      floor: '4th Floor, Flat 402',
       fullAddress: 'Flat 402, Royal Palms, Arera Colony, Bhopal, MP - 462016',
       contact: '+91 98930 12345',
       isDefault: true,
     ),
     AddressModel(
       id: 'addr_2',
-      title: 'Office / Business',
+      tag: 'OFFICE',
+      title: 'Commercial Suite',
+      landmark: 'Opposite City Center',
+      floor: '2nd Floor, Office 12',
       fullAddress: 'Plot 12, Zone 1, MP Nagar, Bhopal, MP - 462011',
       contact: '+91 98930 12345',
       isDefault: false,
     ),
   ];
 
-  // Active address getter for checkout & order placement
   AddressModel get activeAddress {
     return addresses.firstWhere(
       (a) => a.isDefault,
@@ -53,11 +64,21 @@ class AddressStateService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addAddress(String title, String fullAddress, String contact) {
+  void addAddress({
+    required String tag,
+    required String title,
+    required String landmark,
+    required String floor,
+    required String fullAddress,
+    required String contact,
+  }) {
     addresses.add(
       AddressModel(
         id: 'addr_${DateTime.now().millisecondsSinceEpoch}',
+        tag: tag,
         title: title,
+        landmark: landmark,
+        floor: floor,
         fullAddress: fullAddress,
         contact: contact,
       ),
@@ -109,7 +130,20 @@ class SavedAddressesScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(item.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.textPrimary)),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(item.tag, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: AppColors.primary)),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(item.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.textPrimary)),
+                            ],
+                          ),
                           if (item.isDefault)
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -119,6 +153,8 @@ class SavedAddressesScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
+                      Text('${item.floor} • ${item.landmark}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 2),
                       Text(item.fullAddress, style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.3)),
                       const SizedBox(height: 4),
                       Text(item.contact, style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
