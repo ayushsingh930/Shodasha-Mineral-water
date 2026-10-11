@@ -16,7 +16,7 @@ class PlantHubScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -37,17 +37,17 @@ class PlantHubScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'FEED REAL PLANT DATA',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1),
+                    style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white70),
+                    icon: const Icon(Icons.close, color: AppColors.textSecondary),
                     onPressed: () => Navigator.pop(ctx),
                   ),
                 ],
               ),
               const Text(
                 'Enter ground metrics measured at Bhopal Plant today.',
-                style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
               ),
               const SizedBox(height: 16),
               Row(
@@ -79,7 +79,7 @@ class PlantHubScreen extends StatelessWidget {
                 height: 48,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0284C7),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -120,17 +120,18 @@ class PlantHubScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11, fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
         TextField(
           controller: ctrl,
           keyboardType: type,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+          style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color(0xFF0F172A),
+            fillColor: const Color(0xFFF8FAFC),
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.border)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.border)),
           ),
         ),
       ],
@@ -140,16 +141,16 @@ class PlantHubScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B132B),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1C2541),
+        backgroundColor: AppColors.primary,
         elevation: 0,
         title: Row(
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF0284C7),
+                color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: const Text('FACTORY CONSOLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white)),
@@ -163,7 +164,7 @@ class PlantHubScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_note_rounded, color: Color(0xFF38BDF8), size: 26),
+            icon: const Icon(Icons.edit_note_rounded, color: Colors.white, size: 26),
             tooltip: 'Feed Real Plant Data',
             onPressed: () => _showUpdateDataDialog(context),
           ),
@@ -179,28 +180,23 @@ class PlantHubScreen extends StatelessWidget {
           final dispatchedCans = OrderStateNotifier.instance.totalVanStockRemaining;
           final collectedEmpties = OrderStateNotifier.instance.totalEmptyCansCollected;
 
-          // Real Vendor Fed Inventory Math
           final int currentAvailableStock = plant.basePlantStock - dispatchedCans;
 
-          // Financial Settlement
           final int deliveredCount = activeOrders.where((o) => o.status == 'DELIVERED').length + completedOrders.length;
           final int totalRevenue = (deliveredCount * 130) + (dispatchedCans * 65);
 
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppConstants.defaultPadding),
             children: [
-              // LIVE PURITY LAB REPORT (VENDOR-FED)
+              // LIVE PURITY LAB REPORT
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF0284C7), Color(0xFF0369A1)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                  border: Border.all(color: AppColors.border),
                   boxShadow: [
-                    BoxShadow(color: const Color(0xFF0284C7).withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4)),
+                    BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
                   ],
                 ),
                 child: Column(
@@ -209,30 +205,45 @@ class PlantHubScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.verified_user_rounded, color: Colors.white, size: 18),
-                            SizedBox(width: 6),
-                            Text('LIVE PURITY LAB TELEMETRY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 0.8)),
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(Icons.verified_user_rounded, color: AppColors.primary, size: 16),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text('LIVE PURITY LAB TELEMETRY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textPrimary, letterSpacing: 0.8)),
                           ],
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(color: const Color(0xFF16A34A), borderRadius: BorderRadius.circular(6)),
-                          child: Text('BATCH #${plant.batchNumber}', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.white)),
+                          decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(6)),
+                          child: Text('BATCH #${plant.batchNumber}', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Color(0xFF15803D))),
                         ),
                       ],
                     ),
                     const SizedBox(height: 14),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _purityMetric('TDS VALUE', '${plant.tdsValue} ppm', 'Pure Mineral (60-120)'),
-                        Container(height: 36, width: 1, color: Colors.white24),
-                        _purityMetric('PH BALANCE', '${plant.phValue} pH', 'Optimal Alkaline'),
-                        Container(height: 36, width: 1, color: Colors.white24),
-                        _purityMetric('OZONATION', 'Active', '9-Stage RO + UV'),
-                      ],
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _purityMetric('TDS VALUE', '${plant.tdsValue} ppm', 'Pure Mineral (60-120)'),
+                          Container(height: 36, width: 1, color: AppColors.border),
+                          _purityMetric('PH BALANCE', '${plant.phValue} pH', 'Optimal Alkaline'),
+                          Container(height: 36, width: 1, color: AppColors.border),
+                          _purityMetric('OZONATION', 'Active', '9-Stage RO + UV'),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -242,12 +253,12 @@ class PlantHubScreen extends StatelessWidget {
               // ACTION: FEED REAL DATA BUTTON
               SizedBox(
                 width: double.infinity,
-                height: 42,
+                height: 44,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1C2541),
-                    foregroundColor: const Color(0xFF38BDF8),
-                    side: const BorderSide(color: Color(0xFF0284C7)),
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: () => _showUpdateDataDialog(context),
@@ -260,39 +271,42 @@ class PlantHubScreen extends StatelessWidget {
               // WAREHOUSE INVENTORY METRICS
               const Text(
                 'WAREHOUSE INVENTORY & BOTTLE LEDGER',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Color(0xFF94A3B8), letterSpacing: 0.8),
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1C2541),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF334155)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
+                  ],
                 ),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _inventoryItem('READY IN PLANT', '$currentAvailableStock Cans', Icons.warehouse_rounded, const Color(0xFF38BDF8)),
-                        Container(height: 36, width: 1, color: const Color(0xFF334155)),
-                        _inventoryItem('DISPATCHED IN VANS', '$dispatchedCans Cans', Icons.local_shipping_rounded, const Color(0xFFEAB308)),
-                        Container(height: 36, width: 1, color: const Color(0xFF334155)),
+                        _inventoryItem('READY IN PLANT', '$currentAvailableStock Cans', Icons.warehouse_rounded, AppColors.primary),
+                        Container(height: 36, width: 1, color: AppColors.border),
+                        _inventoryItem('DISPATCHED IN VANS', '$dispatchedCans Cans', Icons.local_shipping_rounded, const Color(0xFFD97706)),
+                        Container(height: 36, width: 1, color: AppColors.border),
                         _inventoryItem('RETURNED EMPTIES', '$collectedEmpties Cans', Icons.recycling_rounded, const Color(0xFF16A34A)),
                       ],
                     ),
                     const SizedBox(height: 14),
-                    const Divider(height: 1, color: Color(0xFF334155)),
+                    const Divider(height: 1, color: AppColors.border),
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Icon(Icons.info_outline, size: 14, color: Color(0xFF94A3B8)),
+                        const Icon(Icons.info_outline, size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             '$collectedEmpties empty cans queued in Bhopal sterilization washing bay.',
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
                           ),
                         ),
                       ],
@@ -305,31 +319,34 @@ class PlantHubScreen extends StatelessWidget {
               // FINANCIAL CASH RECONCILIATION
               const Text(
                 'DAILY CASH & SETTLEMENT RECONCILIATION',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Color(0xFF94A3B8), letterSpacing: 0.8),
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1C2541),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF334155)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
+                  ],
                 ),
                 child: Column(
                   children: [
-                    _reconciliationRow('Total Daily Invoiced Value', 'Rs $totalRevenue.00', Colors.white, isBold: true),
+                    _reconciliationRow('Total Daily Invoiced Value', 'Rs $totalRevenue.00', AppColors.textPrimary, isBold: true),
                     const SizedBox(height: 10),
-                    _reconciliationRow('Rider Cash Collection (COD Due)', 'Rs ${(deliveredCount * 130)}.00', const Color(0xFF4ADE80)),
+                    _reconciliationRow('Rider Cash Collection (COD Due)', 'Rs ${(deliveredCount * 130)}.00', const Color(0xFF16A34A)),
                     const SizedBox(height: 10),
-                    _reconciliationRow('Prepaid / Online Settlement', 'Rs ${(dispatchedCans * 65)}.00', const Color(0xFF38BDF8)),
+                    _reconciliationRow('Prepaid / Online Settlement', 'Rs ${(dispatchedCans * 65)}.00', AppColors.primary),
                     const SizedBox(height: 14),
                     SizedBox(
                       width: double.infinity,
                       height: 42,
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF38BDF8),
-                          side: const BorderSide(color: Color(0xFF38BDF8)),
+                          foregroundColor: AppColors.primary,
+                          side: const BorderSide(color: AppColors.primary),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                         onPressed: () {
@@ -357,11 +374,11 @@ class PlantHubScreen extends StatelessWidget {
   Widget _purityMetric(String title, String val, String sub) {
     return Column(
       children: [
-        Text(val, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white)),
+        Text(val, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.primary)),
         const SizedBox(height: 2),
-        Text(title, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white70)),
+        Text(title, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
         const SizedBox(height: 2),
-        Text(sub, style: const TextStyle(fontSize: 9, color: Colors.white54)),
+        Text(sub, style: const TextStyle(fontSize: 9, color: AppColors.textSecondary)),
       ],
     );
   }
@@ -369,11 +386,11 @@ class PlantHubScreen extends StatelessWidget {
   Widget _inventoryItem(String label, String value, IconData icon, Color color) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 20),
+        Icon(icon, color: color, size: 22),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13)),
+        Text(value, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w900, fontSize: 13)),
         const SizedBox(height: 2),
-        Text(label, style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.bold, fontSize: 9), textAlign: TextAlign.center),
+        Text(label, style: const TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 9), textAlign: TextAlign.center),
       ],
     );
   }
@@ -382,7 +399,7 @@ class PlantHubScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: TextStyle(color: const Color(0xFF94A3B8), fontSize: 12, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+        Text(title, style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
         Text(amount, style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.w900)),
       ],
     );

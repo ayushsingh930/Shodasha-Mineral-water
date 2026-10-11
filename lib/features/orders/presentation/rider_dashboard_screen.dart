@@ -9,78 +9,205 @@ class RiderDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
-        elevation: 0,
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFF16A34A),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Text('FLEET ACTIVE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white)),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              'RIDER COCKPIT',
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1.1, color: Colors.white),
-            ),
-          ],
+        title: const Text(
+          'RIDER COCKPIT',
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white, letterSpacing: 1.1),
         ),
+        backgroundColor: AppColors.primary,
+        elevation: 0,
       ),
       body: AnimatedBuilder(
         animation: OrderStateNotifier.instance,
         builder: (context, _) {
-          final pendingOrders = OrderStateNotifier.instance.activeOrders.where((o) => o.status != 'DELIVERED').toList();
-          final stockCans = OrderStateNotifier.instance.totalVanStockRemaining;
-          final collectedCans = OrderStateNotifier.instance.totalEmptyCansCollected;
+          final pendingOrders = OrderStateNotifier.instance.activeOrders
+              .where((o) => o.status != 'DELIVERED')
+              .toList();
+          final deliveredOrders = OrderStateNotifier.instance.activeOrders
+              .where((o) => o.status == 'DELIVERED')
+              .toList();
+
+          final loadedStock = OrderStateNotifier.instance.totalVanStockRemaining;
+          final collectedEmpties = OrderStateNotifier.instance.totalEmptyCansCollected;
 
           return ListView(
             padding: const EdgeInsets.all(AppConstants.defaultPadding),
             children: [
-              // REAL-TIME VAN METRICS CARD
+              // RIDER METRICS STRIP
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF334155)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
+                  ],
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                child: Column(
                   children: [
-                    _metricItem('VAN STOCK', '$stockCans Cans', Icons.water_drop_rounded, const Color(0xFF0284C7)),
-                    Container(height: 36, width: 1, color: const Color(0xFF334155)),
-                    _metricItem('COLLECTED', '$collectedCans Empty', Icons.recycling_rounded, const Color(0xFF16A34A)),
-                    Container(height: 36, width: 1, color: const Color(0xFF334155)),
-                    _metricItem('DROPS LEFT', '${pendingOrders.length}', Icons.local_shipping_rounded, const Color(0xFFEAB308)),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundColor: AppColors.primary.withOpacity(0.1),
+                          child: const Icon(Icons.delivery_dining, color: AppColors.primary, size: 22),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Mahesh (Route Van #4)', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppColors.textPrimary)),
+                              Text('Bhopal Hub: Arera Colony & MP Nagar', style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(6)),
+                          child: const Text('ON DUTY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Color(0xFF15803D))),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    const Divider(height: 1, color: AppColors.border),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _metric('LOADED CANS', '$loadedStock', Icons.water_drop, AppColors.primary),
+                        Container(height: 30, width: 1, color: AppColors.border),
+                        _metric('EMPTIES COLLECTED', '$collectedEmpties', Icons.recycling, const Color(0xFF16A34A)),
+                        Container(height: 30, width: 1, color: AppColors.border),
+                        _metric('PENDING DROPS', '${pendingOrders.length}', Icons.timer_outlined, const Color(0xFFD97706)),
+                      ],
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
 
-              const Text(
-                'ASSIGNED DELIVERY ROUTE (BHOPAL HUB)',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Color(0xFF94A3B8), letterSpacing: 0.8),
+              // PENDING ASSIGNMENTS
+              Text(
+                'ACTIVE ROUTE DROPS (${pendingOrders.length})',
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textSecondary, letterSpacing: 0.8),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
               if (pendingOrders.isEmpty)
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                    border: Border.all(color: AppColors.border),
                   ),
                   child: const Center(
-                    child: Text('All assigned water drops completed for today!', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+                    child: Column(
+                      children: [
+                        Icon(Icons.check_circle_outline, color: Color(0xFF16A34A), size: 40),
+                        SizedBox(height: 8),
+                        Text('All orders for this route are delivered!', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                      ],
+                    ),
                   ),
                 )
               else
-                ...pendingOrders.map((order) => _buildRiderOrderCard(context, order)),
+                ...pendingOrders.map(
+                  (order) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                      border: Border.all(color: AppColors.border),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 6, offset: const Offset(0, 2)),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(order.orderId, style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.primary, fontSize: 13)),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(color: const Color(0xFFFEF9C3), borderRadius: BorderRadius.circular(6)),
+                              child: Text(order.status, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Color(0xFF854D0E))),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(order.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary)),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, size: 14, color: AppColors.textSecondary),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(order.address, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 40,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => RiderDeliveryScreen(order: order)),
+                              );
+                            },
+                            icon: const Icon(Icons.verified_user, size: 16),
+                            label: const Text('VERIFY OTP & COMPLETE DROP', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              if (deliveredOrders.isNotEmpty) ...[
+                const SizedBox(height: 14),
+                Text(
+                  'COMPLETED TODAY (${deliveredOrders.length})',
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textSecondary, letterSpacing: 0.8),
+                ),
+                const SizedBox(height: 8),
+                ...deliveredOrders.map(
+                  (order) => Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFDCFCE7)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle, color: Color(0xFF16A34A), size: 18),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text('${order.orderId} - ${order.title}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                        ),
+                        Text('Returned: ${order.emptyCansToReturn} Can(s)', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF16A34A))),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ],
           );
         },
@@ -88,72 +215,14 @@ class RiderDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _metricItem(String label, String value, IconData icon, Color color) {
+  static Widget _metric(String title, String val, IconData icon, Color color) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 20),
+        Icon(icon, color: color, size: 18),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
-        Text(label, style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.bold, fontSize: 10)),
+        Text(val, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: AppColors.textPrimary)),
+        Text(title, style: const TextStyle(color: AppColors.textSecondary, fontSize: 9, fontWeight: FontWeight.bold)),
       ],
-    );
-  }
-
-  Widget _buildRiderOrderCard(BuildContext context, OrderItem order) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF334155)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(order.orderId, style: const TextStyle(color: Color(0xFF38BDF8), fontWeight: FontWeight.w900, fontSize: 14)),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: const Color(0xFF0369A1), borderRadius: BorderRadius.circular(6)),
-                child: Text(order.status, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(order.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              const Icon(Icons.location_on, color: Color(0xFF94A3B8), size: 14),
-              const SizedBox(width: 4),
-              Expanded(child: Text(order.address, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12))),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 44,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF16A34A),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => RiderDeliveryScreen(order: order)),
-                );
-              },
-              icon: const Icon(Icons.verified, size: 18),
-              label: const Text('VERIFY CUSTOMER PIN & COMPLETE', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12)),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
