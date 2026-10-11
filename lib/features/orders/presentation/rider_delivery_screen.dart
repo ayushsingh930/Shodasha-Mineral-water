@@ -25,9 +25,9 @@ class _RiderDeliveryScreenState extends State<RiderDeliveryScreen> {
   void _verifyAndComplete() {
     final enteredPin = _pinController.text.trim();
 
-    if (enteredPin != '5892') {
+    if (enteredPin != widget.order.deliveryPin) {
       setState(() {
-        _errorMessage = 'Wrong PIN! Ask customer for 4-digit PIN (5892).';
+        _errorMessage = 'Wrong PIN! Please enter \ from customer app.';
       });
       return;
     }
@@ -145,7 +145,7 @@ class _RiderDeliveryScreenState extends State<RiderDeliveryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Ask customer for the 4-digit PIN (Hint: 5892)',
+                    'Ask customer for the order PIN (Hint: \)',
                     style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 12),

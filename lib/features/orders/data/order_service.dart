@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:math';
+import 'package:flutter/material.dart';
 
 class OrderItem {
   final String orderId;
@@ -12,6 +13,7 @@ class OrderItem {
   int orderedCansCount;
   String eta;
   final String date;
+  final String deliveryPin;
 
   OrderItem({
     required this.orderId,
@@ -25,6 +27,7 @@ class OrderItem {
     this.orderedCansCount = 2,
     required this.eta,
     required this.date,
+    required this.deliveryPin,
   });
 }
 
@@ -45,6 +48,7 @@ class OrderStateNotifier extends ChangeNotifier {
       orderedCansCount: 2,
       eta: '~12 mins',
       date: 'Today',
+      deliveryPin: '5892',
     ),
   ];
 
@@ -61,6 +65,7 @@ class OrderStateNotifier extends ChangeNotifier {
       orderedCansCount: 1,
       eta: 'Delivered',
       date: 'Yesterday',
+      deliveryPin: '3149',
     ),
   ];
 
@@ -79,9 +84,19 @@ class OrderStateNotifier extends ChangeNotifier {
     final int count = int.tryParse((cansCount ?? cans ?? 1).toString()) ?? 1;
     final finalTitle = itemName ?? title ?? '$count x 20L Mineral Water Can';
     final finalSlot = slot ?? timeSlot ?? 'Morning (8:00 AM - 3:00 PM)';
-    final finalPrice = price != null ? 'Rs $price' : (amount ?? 'Rs 65.00');
+
+    num unitPrice = 65;
+    if (price != null) {
+      final parsed = num.tryParse(price.toString().replaceAll(RegExp(r'[^0-9.]'), ''));
+      if (parsed != null && parsed > 0) unitPrice = parsed;
+    }
+    final num totalAmount = unitPrice * count;
+    final String calculatedPriceStr = 'Rs $totalAmount.00';
     final finalAddress = address ?? 'Flat 402, Royal Palms, Arera Colony, Bhopal';
     final newId = '#SHD-${(1000 + activeOrders.length + 1)}';
+
+    // Generate unique random 4-digit PIN between 1000 and 9999
+    final generatedPin = (1000 + Random().nextInt(9000)).toString();
 
     activeOrders.insert(
       0,
@@ -91,12 +106,13 @@ class OrderStateNotifier extends ChangeNotifier {
         status: 'BOOKED',
         address: finalAddress,
         timeSlot: finalSlot,
-        amount: finalPrice.toString(),
+        amount: calculatedPriceStr,
         deliveryAgent: 'Mahesh (Delivery Van)',
         emptyCansToReturn: count,
         orderedCansCount: count,
         eta: '~25 mins',
         date: 'Today',
+        deliveryPin: generatedPin,
       ),
     );
     notifyListeners();
@@ -109,7 +125,6 @@ class OrderStateNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Exact Real Calculations for Fleet Cockpit
   int get totalVanStockRemaining {
     return activeOrders
         .where((o) => o.status != 'DELIVERED')

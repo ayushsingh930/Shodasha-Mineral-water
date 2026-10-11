@@ -155,7 +155,7 @@ class OrderCard extends StatelessWidget {
                   const Icon(Icons.pin, color: AppColors.primary, size: 18),
                   const SizedBox(width: 8),
                   const Text('Delivery OTP/PIN: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                  const Text('5892', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.primary, letterSpacing: 2)),
+                  const Text(order.deliveryPin, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.primary, letterSpacing: 2)),
                   const Spacer(),
                   Text(
                     order.eta,
