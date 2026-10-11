@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../../../../core/constants/app_constants.dart';
 import '../../../orders/data/plant_service.dart';
 
@@ -47,7 +47,7 @@ class LivePurityCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         'BHOPAL PLANT PURITY REPORT',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 11.5,
                           fontWeight: FontWeight.w800,
@@ -64,7 +64,7 @@ class LivePurityCard extends StatelessWidget {
                     ),
                     child: Text(
                       'BATCH #${plant.batchNumber}',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: TextStyle(
                         color: const Color(0xFF15803D),
                         fontSize: 9.5,
                         fontWeight: FontWeight.w800,
@@ -105,7 +105,7 @@ class LivePurityCard extends StatelessWidget {
       children: [
         Text(
           val,
-          style: GoogleFonts.inter(
+          style: TextStyle(
             color: AppColors.primary,
             fontWeight: FontWeight.w900,
             fontSize: 14.5,
@@ -115,7 +115,7 @@ class LivePurityCard extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           title,
-          style: GoogleFonts.plusJakartaSans(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w800,
             fontSize: 9,
@@ -124,7 +124,7 @@ class LivePurityCard extends StatelessWidget {
         ),
         Text(
           sub,
-          style: GoogleFonts.inter(
+          style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 8.5,
             fontWeight: FontWeight.w500,

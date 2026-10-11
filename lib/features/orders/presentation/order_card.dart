@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../../../core/constants/app_constants.dart';
 import '../data/order_service.dart';
 import 'rider_delivery_screen.dart';
@@ -40,7 +40,7 @@ class OrderCard extends StatelessWidget {
             children: [
               Text(
                 order.orderId,
-                style: GoogleFonts.plusJakartaSans(
+                style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 14,
                   color: AppColors.primary,
@@ -55,7 +55,7 @@ class OrderCard extends StatelessWidget {
                 ),
                 child: Text(
                   order.status,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.3,
@@ -86,7 +86,7 @@ class OrderCard extends StatelessWidget {
                   children: [
                     Text(
                       order.title,
-                      style: GoogleFonts.plusJakartaSans(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -105,7 +105,7 @@ class OrderCard extends StatelessWidget {
                           ),
                           child: Text(
                             'QTY: ${order.orderedCansCount} ${order.orderedCansCount > 1 ? "CANS" : "CAN"}',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 10.5,
                               letterSpacing: 0.2,
@@ -117,7 +117,7 @@ class OrderCard extends StatelessWidget {
                         // Flipkart Price Format
                         Text(
                           order.amount,
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 15,
                             color: const Color(0xFF0F172A),
@@ -143,7 +143,7 @@ class OrderCard extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 order.timeSlot,
-                style: GoogleFonts.inter(
+                style: TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.w600,
@@ -159,7 +159,7 @@ class OrderCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   order.address,
-                  style: GoogleFonts.inter(
+                  style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w500,
@@ -188,7 +188,7 @@ class OrderCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text(
                     'DELIVERY PIN: ',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textSecondary,
@@ -197,7 +197,7 @@ class OrderCard extends StatelessWidget {
                   ),
                   Text(
                     order.deliveryPin,
-                    style: GoogleFonts.inter(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w900,
                       color: AppColors.primary,
@@ -207,7 +207,7 @@ class OrderCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     order.eta,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF0284C7),
@@ -238,7 +238,7 @@ class OrderCard extends StatelessWidget {
                 icon: const Icon(Icons.verified, size: 16),
                 label: Text(
                   'RIDER: ENTER PIN & DELIVER CANS',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 12,
                     letterSpacing: 0.3,
