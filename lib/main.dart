@@ -1,7 +1,7 @@
+﻿import 'features/auth/presentation/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/constants/app_constants.dart';
-import 'features/home/presentation/customer_home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +31,7 @@ class ShodashaWaterApp extends StatelessWidget {
         ),
         useMaterial3: false,
       ),
-      home: const CustomerHomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }

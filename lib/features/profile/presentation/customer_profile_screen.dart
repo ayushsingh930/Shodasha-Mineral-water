@@ -2,6 +2,7 @@
 import '../../../core/constants/app_constants.dart';
 import 'wallet_screen.dart';
 import '../../admin/presentation/owner_control_center_screen.dart';
+import '../../auth/presentation/login_screen.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
   const CustomerProfileScreen({super.key});
@@ -149,6 +150,25 @@ class CustomerProfileScreen extends StatelessWidget {
               );
             },
           ),
+
+          const SizedBox(height: 12),
+
+          // 6. Logout Tile
+          _buildActionTile(
+            context,
+            icon: Icons.logout,
+            iconColor: const Color(0xFFDC2626),
+            title: 'Logout',
+            subtitle: 'Sign out and switch role account',
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
