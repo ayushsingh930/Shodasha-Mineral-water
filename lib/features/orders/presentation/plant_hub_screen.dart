@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import '../../auth/presentation/login_screen.dart';
+import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
 import '../data/order_service.dart';
 import '../data/plant_service.dart';
@@ -163,6 +164,17 @@ class PlantHubScreen extends StatelessWidget {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'Logout',
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.edit_note_rounded, color: Colors.white, size: 26),
             tooltip: 'Feed Real Plant Data',

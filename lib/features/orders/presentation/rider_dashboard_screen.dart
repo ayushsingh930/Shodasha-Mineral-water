@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import '../../auth/presentation/login_screen.dart';
+import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
 import '../data/order_service.dart';
 import 'rider_delivery_screen.dart';
@@ -17,6 +18,40 @@ class RiderDashboardScreen extends StatelessWidget {
         ),
         backgroundColor: AppColors.primary,
         elevation: 0,
+        actions: [
+          IconButton(
+            tooltip: 'Logout',
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  title: const Text('Logout Rider', style: TextStyle(fontWeight: FontWeight.bold)),
+                  content: const Text('Are you sure you want to end your shift and logout?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDC2626)),
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
+                          (route) => false,
+                        );
+                      },
+                      child: const Text('Logout', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: AnimatedBuilder(
         animation: OrderStateNotifier.instance,
