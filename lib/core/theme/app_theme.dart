@@ -15,8 +15,8 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
-        secondary: AppColors.secondary,
-        surface: AppColors.cardBackground,
+        secondary: AppColors.primary,
+        surface: AppColors.surface,
       ),
       textTheme: const TextTheme(
         // Flipkart Banner / Section Headings

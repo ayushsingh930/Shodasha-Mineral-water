@@ -1,13 +1,12 @@
-﻿import 'widgets/live_purity_card.dart';
-import 'package:flutter/material.dart';
-import '../../../../core/constants/app_constants.dart';
-import 'widgets/top_bar.dart';
-import 'widgets/mode_selection_cards.dart';
-import 'widgets/featured_products.dart';
+﻿import 'package:flutter/material.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../orders/presentation/my_orders_screen.dart';
 import '../../subscriptions/presentation/subscription_screen.dart';
-import '../../wallet/presentation/wallet_can_ledger_screen.dart';
+import '../../profile/presentation/wallet_screen.dart';
 import '../../profile/presentation/customer_profile_screen.dart';
+import 'widgets/top_bar.dart';
+import 'widgets/featured_products.dart';
+import 'widgets/mode_selection_cards.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
@@ -17,7 +16,6 @@ class CustomerHomeScreen extends StatefulWidget {
 }
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
-  DateTime? _lastBackPressTime;
   int _currentTabIndex = 0;
 
   void _onTabTapped(int index) {
@@ -26,7 +24,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     });
   }
 
-  Widget _buildHomeBody() {
+  Widget _buildHomeTab() {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,10 +52,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      _buildHomeBody(),
+      _buildHomeTab(),
       const MyOrdersScreen(),
       const SubscriptionScreen(),
-      const WalletCanLedgerScreen(),
+      const WalletScreen(),
       const CustomerProfileScreen(),
     ];
 

@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../orders/presentation/rider_dashboard_screen.dart';
-import '../../orders/presentation/plant_hub_screen.dart';
+import 'wallet_screen.dart';
+import '../../admin/presentation/owner_control_center_screen.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
   const CustomerProfileScreen({super.key});
@@ -9,14 +9,20 @@ class CustomerProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text(
-          'ACCOUNT & SETTINGS',
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white, letterSpacing: 1.1),
+          'ACCOUNT & PROFILE',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+            color: Colors.white,
+            letterSpacing: 1.1,
+          ),
         ),
         backgroundColor: AppColors.primary,
         elevation: 0,
+        automaticallyImplyLeading: false,
       ),
       body: ListView(
         padding: const EdgeInsets.all(AppConstants.defaultPadding),
@@ -41,155 +47,144 @@ class CustomerProfileScreen extends StatelessWidget {
                 CircleAvatar(
                   radius: 28,
                   backgroundColor: AppColors.primary.withOpacity(0.12),
-                  child: const Text('AS', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.primary, fontSize: 18)),
+                  child: const Icon(Icons.person, color: AppColors.primary, size: 30),
                 ),
                 const SizedBox(width: 14),
                 const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Ayush Singh', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.textPrimary)),
-                      SizedBox(height: 2),
-                      Text('+91 98930 12345', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                      Text(
+                        'Ayush Singh',
+                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Color(0xFF0F172A)),
+                      ),
+                      SizedBox(height: 3),
+                      Text(
+                        '+91 98930 00000 • Bhopal, MP',
+                        style: TextStyle(fontSize: 12.5, color: Color(0xFF64748B)),
+                      ),
                     ],
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(8)),
-                  child: const Text('VERIFIED', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Color(0xFF15803D))),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // ENTERPRISE ROLE SWITCHER (SHODASHA BRAND THEME)
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-              border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withOpacity(0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        'MNC ENTERPRISE SUITE',
-                        style: TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.w900),
-                      ),
-                    ),
-                    const Icon(Icons.corporate_fare_rounded, color: AppColors.primary, size: 22),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Enterprise Operational Consoles',
-                  style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w900, fontSize: 15),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Switch between Van Fleet Cockpit and Bhopal Factory Inventory Hub.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 44,
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const RiderDashboardScreen()),
-                            );
-                          },
-                          icon: const Icon(Icons.delivery_dining, size: 18),
-                          label: const Text(
-                            'RIDER FLEET',
-                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: SizedBox(
-                        height: 44,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.primary,
-                            side: const BorderSide(color: AppColors.primary, width: 1.5),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const PlantHubScreen()),
-                            );
-                          },
-                          icon: const Icon(Icons.factory_rounded, size: 18, color: AppColors.primary),
-                          label: const Text(
-                            'BHOPAL PLANT',
-                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: AppColors.primary),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
-          const Text('APP SETTINGS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textSecondary, letterSpacing: 0.8)),
-          const SizedBox(height: 8),
-          _buildTile(Icons.location_on_outlined, 'Saved Addresses', 'Flat 402, Royal Palms, Bhopal'),
-          _buildTile(Icons.account_balance_wallet_outlined, 'Shodasha Wallet', 'Rs 240.00 Balance'),
-          _buildTile(Icons.security_outlined, 'Water Quality Standards', 'ISO 9001 & BIS Certified'),
-          _buildTile(Icons.support_agent_outlined, 'Bhopal Plant Support', '24x7 Helpline active'),
+
+          // Menu Options
+          const Text(
+            'QUICK SERVICES',
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Color(0xFF64748B), letterSpacing: 0.8),
+          ),
+          const SizedBox(height: 10),
+
+          // 1. Shodasha Wallet
+          _buildActionTile(
+            context,
+            icon: Icons.account_balance_wallet_outlined,
+            iconColor: const Color(0xFF0284C7),
+            title: 'Shodasha Wallet & Can Ledger',
+            subtitle: '₹450.00 Balance • 2 Cans Held',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const WalletScreen()),
+              );
+            },
+          ),
+
+          // 2. Owner Control Center
+          _buildActionTile(
+            context,
+            icon: Icons.admin_panel_settings_outlined,
+            iconColor: const Color(0xFF7C3AED),
+            title: 'Owner Control Center',
+            subtitle: 'Track Riders, Customers & Plant Hub',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const OwnerControlCenterScreen()),
+              );
+            },
+          ),
+
+          // 3. Saved Addresses
+          _buildActionTile(
+            context,
+            icon: Icons.location_on_outlined,
+            iconColor: const Color(0xFFEA580C),
+            title: 'Saved Addresses',
+            subtitle: 'Flat 402, Royal Palms, Bhopal',
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Address Management')),
+              );
+            },
+          ),
+
+          // 4. Quality Standards
+          _buildActionTile(
+            context,
+            icon: Icons.verified_outlined,
+            iconColor: const Color(0xFF16A34A),
+            title: 'Water Quality Standards',
+            subtitle: 'ISO 9001 & BIS IS 14543 Certified',
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('ISO 9001 Certified Bhopal Bottling Plant')),
+              );
+            },
+          ),
+
+          // 5. Plant Support
+          _buildActionTile(
+            context,
+            icon: Icons.support_agent_outlined,
+            iconColor: const Color(0xFF0D9488),
+            title: 'Bhopal Plant Support',
+            subtitle: '24x7 Helpline • +91 98260 00000',
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Connecting to Plant Helpline...')),
+              );
+            },
+          ),
         ],
       ),
     );
   }
 
-  static Widget _buildTile(IconData icon, String title, String subtitle) {
-    return Container(
+  Widget _buildActionTile(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 0,
       margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-        border: Border.all(color: AppColors.border),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: const BorderSide(color: Color(0xFFE2E8F0)),
       ),
       child: ListTile(
-        leading: Icon(icon, color: AppColors.primary),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textPrimary)),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-        trailing: const Icon(Icons.chevron_right, size: 20, color: Color(0xFF94A3B8)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        leading: CircleAvatar(
+          backgroundColor: iconColor.withOpacity(0.12),
+          child: Icon(icon, color: iconColor, size: 22),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: Color(0xFF0F172A)),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+        ),
+        trailing: const Icon(Icons.chevron_right, color: Color(0xFF94A3B8), size: 20),
+        onTap: onTap,
       ),
     );
   }
