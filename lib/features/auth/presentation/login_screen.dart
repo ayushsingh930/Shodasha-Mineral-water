@@ -16,23 +16,21 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   AuthPortal _currentPortal = AuthPortal.customer;
   
-  // Controllers
   final TextEditingController _phoneController = TextEditingController();
   final List<TextEditingController> _otpControllers = List.generate(4, (_) => TextEditingController());
   final List<FocusNode> _otpFocusNodes = List.generate(4, (_) => FocusNode());
-  final TextEditingController _partnerPasscodeController = TextEditingController();
 
-  // State
   bool _isOtpSent = false;
   bool _isLoading = false;
   int _timerSeconds = 30;
   Timer? _resendTimer;
+  String? _detectedRoleTitle;
 
   // Registered Whitelist DB for Riders and Vendors
-  static const Map<String, String> _partnerRegistry = {
-    '9826011111': 'rider',   // Ramesh Rider (Bhopal MP Nagar)
-    '9826022222': 'rider',   // Suresh Rider (Arera Colony)
-    '9826099999': 'vendor',  // Bhopal Bottling Plant Hub
+  static const Map<String, Map<String, String>> _partnerRegistry = {
+    '9826011111': {'role': 'rider', 'name': 'Ramesh Kumar (Rider - MP Nagar)'},
+    '9826022222': {'role': 'rider', 'name': 'Suresh Verma (Rider - Arera Colony)'},
+    '9826099999': {'role': 'vendor', 'name': 'Bhopal Bottling Plant Hub (Vendor)'},
   };
 
   @override
@@ -44,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
     for (var f in _otpFocusNodes) {
       f.dispose();
     }
-    _partnerPasscodeController.dispose();
     _resendTimer?.cancel();
     super.dispose();
   }
@@ -69,11 +66,13 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     if (_currentPortal == AuthPortal.partner) {
-      // Check Whitelist Security Check
       if (!_partnerRegistry.containsKey(phone)) {
         _showAccessDeniedDialog();
         return;
       }
+      _detectedRoleTitle = _partnerRegistry[phone]!['name'];
+    } else {
+      _detectedRoleTitle = 'Customer Account';
     }
 
     setState(() => _isLoading = true);
@@ -103,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = false);
 
       if (_currentPortal == AuthPortal.partner) {
-        final role = _partnerRegistry[phone];
+        final role = _partnerRegistry[phone]!['role'];
         if (role == 'rider') {
           Navigator.pushReplacement(
             context,
@@ -116,10 +115,10 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } else {
-        // Customer Default Entry
+        // Customer Entry with user's actual phone forwarded
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const CustomerHomeScreen()),
+          MaterialPageRoute(builder: (_) => CustomerHomeScreen(userPhone: phone)),
         );
       }
     });
@@ -138,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
         content: const Text(
-          'This mobile number is not registered in the Shodasha Partner & Operations Network.\n\nOnly verified Delivery Riders and Plant Hub Managers can access this portal.',
+          'This mobile number is not registered in the Shodasha Operations Network.\n\nOnly registered Delivery Riders and Plant Vendors can access this section.',
           style: TextStyle(fontSize: 13, color: Color(0xFF475569), height: 1.4),
         ),
         actions: [
@@ -186,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Top Brand Hero Section with Delivery Illustration
+              // Brand Hero Section
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.only(top: 20, bottom: 24, left: 20, right: 20),
@@ -241,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 20),
 
-              // Portal Switcher Tabs (Customer vs Partner)
+              // Portal Switcher Tabs
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Container(
@@ -325,7 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 24),
 
-              // Dynamic Auth Form (Step 1: Phone vs Step 2: OTP)
+              // Form Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: _isOtpSent ? _buildOtpSection() : _buildPhoneInputSection(),
@@ -411,6 +410,46 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // Role Detection Header Card
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: _currentPortal == AuthPortal.customer ? const Color(0xFFDCFCE7) : const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _currentPortal == AuthPortal.customer ? const Color(0xFF86EFAC) : const Color(0xFFCBD5E1),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                _currentPortal == AuthPortal.customer ? Icons.verified_user : Icons.badge_outlined,
+                color: _currentPortal == AuthPortal.customer ? const Color(0xFF16A34A) : const Color(0xFF0F172A),
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('VERIFIED ROLE IDENTIFIED', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF64748B), letterSpacing: 0.5)),
+                    Text(
+                      _detectedRoleTitle ?? 'Account',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                        color: _currentPortal == AuthPortal.customer ? const Color(0xFF16A34A) : const Color(0xFF0F172A),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 18),
+
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -464,7 +503,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 20),
 
-        // Resend Timer Row
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -484,7 +522,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Verify and Enter Button
         SizedBox(
           width: double.infinity,
           height: 52,

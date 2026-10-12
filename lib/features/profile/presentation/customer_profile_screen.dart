@@ -5,7 +5,8 @@ import '../../admin/presentation/owner_control_center_screen.dart';
 import '../../auth/presentation/login_screen.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
-  const CustomerProfileScreen({super.key});
+  final String userPhone;
+  const CustomerProfileScreen({super.key, this.userPhone = '9893000000'});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class CustomerProfileScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(AppConstants.defaultPadding),
         children: [
-          // User Card
+          // User Card showing dynamic phone number
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -51,18 +52,18 @@ class CustomerProfileScreen extends StatelessWidget {
                   child: const Icon(Icons.person, color: AppColors.primary, size: 30),
                 ),
                 const SizedBox(width: 14),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Ayush Singh',
                         style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Color(0xFF0F172A)),
                       ),
-                      SizedBox(height: 3),
+                      const SizedBox(height: 3),
                       Text(
-                        '+91 98930 00000 • Bhopal, MP',
-                        style: TextStyle(fontSize: 12.5, color: Color(0xFF64748B)),
+                        '+91 $userPhone • Bhopal, MP',
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF16A34A)),
                       ),
                     ],
                   ),

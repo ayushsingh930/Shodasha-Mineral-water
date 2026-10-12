@@ -9,7 +9,8 @@ import 'widgets/featured_products.dart';
 import 'widgets/mode_selection_cards.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
-  const CustomerHomeScreen({super.key});
+  final String userPhone;
+  const CustomerHomeScreen({super.key, this.userPhone = '9893000000'});
 
   @override
   State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
@@ -56,7 +57,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       const MyOrdersScreen(),
       const SubscriptionScreen(),
       const WalletScreen(),
-      const CustomerProfileScreen(),
+      CustomerProfileScreen(userPhone: widget.userPhone),
     ];
 
     return Scaffold(
